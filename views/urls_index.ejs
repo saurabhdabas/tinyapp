@@ -21,6 +21,7 @@
           <th scope="col">Delete</th>
         </tr>
       </thead>
+      <% if( username ){ %>
       <tbody>
         <% for(let url in urls) { %>
           <tr>
@@ -35,6 +36,7 @@
           </tr>
         <% } %>
       </tbody>
+      <% } %>
     </table>
     
   </main>
