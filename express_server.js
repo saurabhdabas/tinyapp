@@ -41,19 +41,8 @@ app.get("/", (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
-app.get('/login', function (req, res) {
-  const templateVars = { urls: urlDatabase , user :users[req.cookies.user_id]};
-  res.render("user_login",templateVars)
-})
-app.post('/login', function (req, res) {
-  res.redirect("/urls");
-})
-// app.post('/logout', function (req, res) {
-//   console.log(users);
-//   res.clearCookie("user_id");
 
-//   res.redirect("/urls")
-// })
+
 app.get("/register", (req, res) => {
   const templateVars = { urls: urlDatabase ,user :users[req.cookies.user_id]};
   res.render("user_registration",templateVars);
@@ -72,6 +61,7 @@ const findAUser = function(users,user_id){
 const emailLooker = function(users,email){
   for(let user in users){
     if(users[user].email === email){
+      console.log(user);
       return true
     }
   }
@@ -91,12 +81,44 @@ app.post("/register", (req, res) => {
     password: req.body.password }
     res.cookie("user_id", users[randomID].id) // A cookie is set to that randomID.
     const user = findAUser(users,randomID); // find a user with that cookie: user_id in the database
+    res.redirect("/urls/new");
   }
-  
-  console.log(users);
-  res.redirect("/urls");
+  // console.log(users);
 });
 
+app.get('/login', function (req, res) {
+  const templateVars = { urls: urlDatabase , user :users[req.cookies.user_id]};
+  // console.log(users);
+  res.render("user_login",templateVars)
+})
+app.post('/login', function (req, res) {
+  if(req.body.email === "" || req.body.password === ""){
+    return res.status(400).send("Please Fill up all fields!")
+  }
+  else{
+    const userFound = emailLooker(users,req.body.email)
+    if(userFound){
+      console.log("userFound",userFound)
+      for(let user in users){
+        console.log("userEnteredPass;",req.body.password);
+        if(users[user].password === req.body.password){
+          console.log("userFoundWithSameEmail",users[user].password);
+          console.log("cookieID;",req.cookies.user_id);
+          console.log("user_id;",users[user].id);
+          req.cookies.user_id = users[user].id
+          res.redirect("/urls")
+        }
+      }
+      return res.status(403).send("Password entered is incorrect! Try Again.")
+    }
+    return res.status(403).send("Email entered is incorrect! Try Again.")
+  }
+})
+app.post('/logout', function (req, res) {
+  // console.log("users:",users);
+  res.clearCookie("user_id");
+  res.redirect("/urls")
+})
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase ,user :users[req.cookies.user_id]};
   res.render("urls_index",templateVars)
@@ -110,7 +132,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`)
 });
 app.get("/urls/new", (req, res) => {
-  const templateVars = {username: req.cookies["name"] ,user :users[req.cookies.user_id]};
+  const templateVars = {user :users[req.cookies.user_id]};
   console.log(templateVars);
   res.render("urls_new",templateVars);
 });
