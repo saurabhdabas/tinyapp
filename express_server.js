@@ -41,6 +41,9 @@ app.get("/", (req, res) => {
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
+app.get('/login', function (req, res) {
+  res.render("user_login")
+})
 app.post('/login', function (req, res) {
   res.cookie("name",req.body.username);
 
