@@ -30,6 +30,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const cookieParser = require('cookie-parser');
 const req = require("express/lib/request");
+const res = require("express/lib/response");
 app.use(cookieParser());
 
 // This line of code registers a handler on the root path, "/".
@@ -62,6 +63,16 @@ const findAUser = function(users,user_id){
   });
   return getAUser[0]
 }
+const emailLooker = function(users,email){  
+  const userArray = Object.values(users);
+  for(let user of userArray){
+    if(user.email === email){
+      res.statusCode = 400;
+      console.log("statusCode",res.statusCode)
+      return ;
+    }
+  }
+}
 app.post("/register", (req, res) => {
   const randomID = generateRandomString();
   users[randomID] = {    id: randomID, 
@@ -69,7 +80,13 @@ app.post("/register", (req, res) => {
   password: req.body.password }
   res.cookie("user_id", users[randomID].id)
   const user = findAUser(users,randomID);
-
+  console.log(users);
+  if(users[randomID].email === "" || users[randomID].password === ""  ){
+    res.statusCode = 400 ;
+    return ;
+  }
+  emailLooker(users,user.email);
+  console.log(users);
   res.redirect("/urls");
 });
 
