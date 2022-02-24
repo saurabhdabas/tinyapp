@@ -42,53 +42,57 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 app.get('/login', function (req, res) {
-  res.render("user_login")
+  const templateVars = { urls: urlDatabase , user :users[req.cookies.user_id]};
+  res.render("user_login",templateVars)
 })
 app.post('/login', function (req, res) {
-  res.cookie("name",req.body.username);
-
-  res.redirect("/urls")
-
+  res.redirect("/urls");
 })
-app.post('/logout', function (req, res) {
-  res.clearCookie("name");
+// app.post('/logout', function (req, res) {
+//   console.log(users);
+//   res.clearCookie("user_id");
 
-  res.redirect("/urls")
-})
+//   res.redirect("/urls")
+// })
 app.get("/register", (req, res) => {
-  res.render("user_registration");
-  console.log("req.cookies:",req.cookies);
+  const templateVars = { urls: urlDatabase ,user :users[req.cookies.user_id]};
+  res.render("user_registration",templateVars);
+
 });
 const findAUser = function(users,user_id){
   const userArray = Object.values(users);
   const getAUser = userArray.filter((user)=>{
     return  user.id === user_id
   });
+  // console.log(getAUser);
   return getAUser[0]
 }
-const emailLooker = function(users,email){  
-  const userArray = Object.values(users);
-  for(let user of userArray){
-    if(user.email === email){
-      res.statusCode = 400;
-      console.log("statusCode",res.statusCode)
-      return ;
+// A function that loops over the users database to check if email provided by user already exists
+
+const emailLooker = function(users,email){
+  for(let user in users){
+    if(users[user].email === email){
+      return true
     }
   }
 }
 app.post("/register", (req, res) => {
-  const randomID = generateRandomString();
-  users[randomID] = {    id: randomID, 
-  email: req.body.email, 
-  password: req.body.password }
-  res.cookie("user_id", users[randomID].id)
-  const user = findAUser(users,randomID);
-  console.log(users);
-  if(users[randomID].email === "" || users[randomID].password === ""  ){
-    res.statusCode = 400 ;
-    return ;
+  const userAlreadyExists = emailLooker(users,req.body.email)
+  if(userAlreadyExists){
+    return res.status(400).send("User Already Exists!")
   }
-  emailLooker(users,user.email);
+  else if(req.body.email === "" || req.body.password === ""){
+    return res.status(400).send("Please Fill up all fields!")
+  }
+  else{
+    const randomID = generateRandomString();  // Created a random ID which is used to create an new user object inside the users database
+    users[randomID] = {    id: randomID, 
+    email: req.body.email, 
+    password: req.body.password }
+    res.cookie("user_id", users[randomID].id) // A cookie is set to that randomID.
+    const user = findAUser(users,randomID); // find a user with that cookie: user_id in the database
+  }
+  
   console.log(users);
   res.redirect("/urls");
 });
