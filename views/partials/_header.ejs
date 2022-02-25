@@ -11,12 +11,12 @@
       </div>
     </div>
     <div>
-      <% if( user ){ %>
+      <% if( user ){ %> <!----- Checking if user exists in Database or logged in . User exist in Database when a cookie has been set and Cookie is set when user registers for the first time on the website. Also, if user registered , then logout is displayed-->
         <form class="form-inline" method ="post" action ="/logout">
           <p class="">Logged in As :<%= user.email %></p>
           <a href ="/logout"><button type="submit" class="btn btn-primary" style="width: 100px; margin: 1em" >Logout</button></a>
         </form>
-      <% } else{ %>  
+      <% } else{ %>  <!--- IF user doesnot exist in Database a login and register button is displayed on the header-->
 
         <a href ="/register"><button type="submit" class="btn btn-primary">Register</button></a>
         <a href ="/login"><button type="submit" class="btn btn-primary">Login</button></a>
