@@ -111,7 +111,7 @@ app.get('/urls/new', (req, res) => {
     res.redirect('/login');
   }
 });
-app.get('/urls/:id', (req, res) => {
+app.get('/urls/:id', (req, res) =>{
   const IfUserIsLoggedIn = users[req.session.user_id];//This gives me a user that has the email which matched to the provided email
   if(!isShortUrl(urlDatabase, req.params.id)){
     return res.send('<h1>The Path you are trying to access does not exist!</h1>');
@@ -128,9 +128,9 @@ app.get('/urls/:id', (req, res) => {
       return res.send('<h1>The Path you are trying to access does not exist!</h1>');
     }
   }else{
-     return res.send('<h1>The Path you are trying to access does not exist!</h1>');
+    return res.send('<h1>The Path you are trying to access does not exist!</h1>');
   }
-
+  
 });
 app.get('/u/:id', (req, res) => {
   if(isShortUrl(urlDatabase, req.params.id)){
@@ -152,7 +152,7 @@ app.post('/urls', (req, res) =>{
     return res.send('<h1>The Path you are trying to access does not exist!</h1>');
   }
 });
-app.post('/urls/:id', (req, res) => {
+app.post('/urls/:id', (req, res) =>{
   const IfUserIsLoggedIn = users[req.session.user_id];//This gives me an Object that has the email which matched to the provided email
   const userURLs = urlsForUser(urlDatabase,req.session.user_id);
   if(!IfUserIsLoggedIn){
@@ -167,8 +167,7 @@ app.post('/urls/:id', (req, res) => {
     return res.send('<h1>Login to Access the Path!</h1>');
   }
 });
-
-app.post('/urls/:id/delete', (req, res) => {
+app.post('/urls/:id/delete', (req, res) =>{
   const IfUserIsLoggedIn = users[req.session.user_id];//This gives me an Object that has the email which matched to the provided email
   const userURLs = urlsForUser(urlDatabase,req.session.user_id);
   if(!IfUserIsLoggedIn){
@@ -183,9 +182,7 @@ app.post('/urls/:id/delete', (req, res) => {
     return res.send('<h1>Login to Access the Path!</h1>');
   }
 });
-
-// Gets the Login page 
-app.get('/login', function (req, res) {
+app.get('/login', function (req, res){
   const IfUserIsLoggedIn = users[req.session.user_id];//This gives me an Object that has the email which matched to the provided email
   if(!IfUserIsLoggedIn){
     const templateVars = { urls: urlDatabase , user : users[req.session.user_id]};
@@ -245,8 +242,7 @@ app.post('/register', (req, res) => {
   }
   // Registering  a new User to the user Database .
   const randomID = generateRandomString(); 
-  users[randomID] = {  id: randomID, email: email, password: bcrypt.hashSync(password,10) }
-  // res.cookie('user_id', randomID) // A cookie with name : user_id is set to that randomID.
+  users[randomID] = {  id: randomID, email: email, password: bcrypt.hashSync(password,10) };
   req.session.user_id = randomID ;
   console.log('Registration Message : User successfully registered');
   console.log('Updated Database after a user Registered',users);
