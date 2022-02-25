@@ -8,4 +8,9 @@ const getUserByEmail = ( email , users ) => {
   }
   return null ;
 }
-module.exports = { getUserByEmail };
+// A function that generates a random string 
+const generateRandomString = () => {
+  return Math.random().toString(30).substring(2,8);
+};
+
+module.exports = { getUserByEmail , generateRandomString  };

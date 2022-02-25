@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUserByEmail } = require('./helpers');
+const { getUserByEmail, generateRandomString } = require('./helpers');
 const app = express();
 const PORT = 8080;
 app.set('view engine', 'ejs');
@@ -35,10 +35,7 @@ const users = {
   }
 }
 //------------------------------------------>HELPERFUNCTIONS<--------------------------------------------//
-// A function that generates a random string 
-const generateRandomString = () => {
-  return Math.random().toString(30).substring(2,8);
-};
+
 
 // A Function that scan the urlDatabase to return the URLs where the userID is equal to the id of the currently logged-in user.
 const urlsForUser = (urlDatabase,id) => {
