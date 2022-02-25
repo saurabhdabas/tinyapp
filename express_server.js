@@ -1,4 +1,5 @@
 const express = require('express');
+const { getUserByEmail } = require('./helpers');
 const app = express();
 const PORT = 8080;
 app.set('view engine', 'ejs');
@@ -33,21 +34,12 @@ const users = {
     password: '5678'
   }
 }
-//-------------------------------------------------->HELPER FUNCTIONS<----------------------------------------------------------//
+//------------------------------------------>HELPERFUNCTIONS<--------------------------------------------//
 // A function that generates a random string 
 const generateRandomString = () => {
   return Math.random().toString(30).substring(2,8);
 };
-// A function that loops over the users database to check if email provided by user already exists
-const getAUserByEmail = ( email , users ) => {
-  for( const userID in users){
-    if(users[userID].email === email){
-      console.log('getAUserByEmail',userID)
-      return userID;
-    }
-  }
-  return null ;
-}
+
 // A Function that scan the urlDatabase to return the URLs where the userID is equal to the id of the currently logged-in user.
 const urlsForUser = (urlDatabase,id) => {
   let matchedURL = { };
@@ -130,7 +122,7 @@ app.get('/urls/:id', (req, res) =>{
   }else{
     return res.send('<h1>The Path you are trying to access does not exist!</h1>');
   }
-  
+
 });
 app.get('/u/:id', (req, res) => {
   if(isShortUrl(urlDatabase, req.params.id)){
@@ -204,7 +196,7 @@ app.get('/register', (req, res) => {
 
 // When user tries to login 
 app.post('/login', function (req, res) {
-  const userID = getAUserByEmail(req.body.email, users); // returns a userID that matches to the one that has a same email
+  const userID = getUserByEmail(req.body.email, users); // returns a userID that matches to the one that has a same email
   const userInDatabase = users[userID] ;// This gives me the user that has the email which matched to the provided email.
   const password = req.body.password ;
   // Checks if the user filled all the fields 
@@ -231,7 +223,7 @@ app.post('/login', function (req, res) {
 app.post('/register', (req, res) => {
   const email = req.body.email;
   const password = req.body.password ;
-  const user = getAUserByEmail(email,users);
+  const user = getUserByEmail(email,users);
   // Checks if the email && password fields are empty , if the fields are empty send a 400 Error.
   if(email === '' || password === ''){
     return res.status(400).send('<h1>Please Fill up all fields!</h1>');
@@ -252,6 +244,7 @@ app.post('/register', (req, res) => {
 // When user presses on logout button, it clears the cookie and redirects user to /urls .
 app.post('/logout', function (req, res){
   console.log('Cookie is cleared:User redirected to homepage');
+  console.log('User is successfully Logged Out');
   req.session = null;
   return res.redirect('/urls')
 })
