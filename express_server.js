@@ -102,14 +102,14 @@ app.get('/urls/new', (req, res) => {
 });
 app.get('/urls/:id', (req, res) =>{
   const IfUserIsLoggedIn = users[req.session.user_id];//This gives me a user that has the email which matched to the provided email
+  const userURLs = urlsForUser(urlDatabase,req.session.user_id);
   if(!isShortUrl(urlDatabase, req.params.id)){
     return res.send('<h1>The Path you are trying to access does not exist!</h1>');
   }
   if(!IfUserIsLoggedIn){
     return res.send('<h1>Login to Access the Path!</h1>');
   }
-  if(isShortUrl(urlDatabase, req.params.id)){ 
-    const userURLs = urlsForUser(urlDatabase,req.session.user_id);
+  if(isShortUrl(userURLs, req.params.id)){ 
     if(userURLs[req.params.id].userID == req.session.user_id){
       const templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id].longURL ,user :users[req.session.user_id]};
       return res.render('urls_show', templateVars);
@@ -119,7 +119,7 @@ app.get('/urls/:id', (req, res) =>{
   }else{
     return res.send('<h1>The Path you are trying to access does not exist!</h1>');
   }
-
+  
 });
 app.get('/u/:id', (req, res) => {
   if(isShortUrl(urlDatabase, req.params.id)){
