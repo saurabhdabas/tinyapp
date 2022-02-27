@@ -1,5 +1,6 @@
 const express = require('express');
-const { getUserByEmail, generateRandomString } = require('./helpers');
+const { getUserByEmail, generateRandomString, urlsForUser, addAUrlToDatabase, isShortUrl } = require('./helpers');
+const { urlDatabase, users } = require("./database");
 const app = express();
 const PORT = 8080;
 app.set('view engine', 'ejs');
@@ -14,59 +15,7 @@ app.use(cookieSession({
 }));
 const bcrypt = require('bcryptjs');
 
-// A Database that contains urls where shortURL is the key and userID contains a random generated ID.
-
-const urlDatabase = {
-
-};
-
-// A Database that contains a list of registered users .
-
-const users = { 
-  'userRandomID': {
-    id: 'userRandomID', 
-    email: 'user@example.com', 
-    password: '1234'
-  },
- 'user2RandomID': {
-    id: 'user2RandomID', 
-    email: 'user2@example.com', 
-    password: '5678'
-  }
-}
-//------------------------------------------>HELPERFUNCTIONS<--------------------------------------------//
-
-
-// A Function that scan the urlDatabase to return the URLs where the userID is equal to the id of the currently logged-in user.
-const urlsForUser = (urlDatabase,id) => {
-  let matchedURL = { };
-  for (url in urlDatabase){
-    if (urlDatabase[url].userID === id) {
-      matchedURL[url] = urlDatabase[url];
-    }
-  }
-  return matchedURL;
-}
-// Function allows me to create a new Entry to my urlDatabase
-const addAUrlToDatabase = (urlDatabase,userID) =>{
-  let newShortUrl = {};
-  for(const shortURL in urlDatabase){
-    if(urlDatabase[shortURL].userID === userID){
-      newShortUrl[shortURL] = urlDatabase[shortURL]
-    }
-  }
-  return newShortUrl;
-}
-// The Function helps to find a shortUrl in the database that matches to the one provided by user in the browser
-const isShortUrl = (urlDatabase, id ) => {
-  for(let userID in urlDatabase){
-    if( id === userID){
-      return true;
-    }
-  }
-  return false;
-}
-//----------------------------------------------------------------> ROUTES <--------------------------------------------------- //
+//---------------------------------------------------> ROUTES<------------------------------------------//
 app.get('/', (req, res) =>{
   // If user is logged In 
   const IfUserIsLoggedIn = users[req.session.user_id];
